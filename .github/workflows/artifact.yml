@@ -1,17 +1,28 @@
-name: github_artifact
+name: artifact
+
 on: [push]
+
 env:
-  ARTIFACT_NAME: myartifact
-  
+  FILE_NAME: hello-server
+
 jobs:
-  main:
-    runs_on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-latest
     steps:
-      - name: checkout the code
-        uses: actions/checkout@v2
-      - name: upload the artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{env.ARTIFACT_NAME}}
-          path: .
+
+    - name: Check out code
+      uses: actions/checkout@v1
+
+    - name: Build ${{ env.FILE_NAME }} for ubuntu-latest
+      run: go build ${{ env.FILE_NAME }}.go
+
+    - name: Build ${{ env.FILE_NAME }} for windows-latest
+      run: GOOS=windows GOARCH=amd64 go build ${{ env.FILE_NAME }}.go
+      
+    - name: Upload artifact for linux
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: linux
+        path: ./${{ env.FILE_NAME }}
   
